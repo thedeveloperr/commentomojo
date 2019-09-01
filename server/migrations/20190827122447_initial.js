@@ -24,12 +24,12 @@ exports.up = function(knex) {
       table.boolean('upvote');
       table
         .integer('parentCommentId')
+        .notNull()
         .unsigned()
         .references('id')
         .inTable('comments')
         .onDelete('CASCADE')
         .index();
-
       table
         .integer('voterId')
         .unsigned()
@@ -44,9 +44,11 @@ exports.up = function(knex) {
 
 };
 
+// maintain order of deletion because of foreign key dependencies.
 exports.down = function(knex) {
   return knex.schema
-    .dropTableIfExists('users')
-    .dropTableIfExists('comments')
     .dropTableIfExists('votes')
+    .dropTableIfExists('comments')
+    .dropTableIfExists('users')
+
 };
