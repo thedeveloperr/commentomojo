@@ -6,50 +6,60 @@ const {
 } = require('objection-db-errors');
 const {
   NotFoundError,
-  Model
+  Model,
+  transaction
 } = require('objection');
-Model.knex(knex);
-// See seed file to see initial data
-beforeAll(async () => {
-  await knex.migrate.rollback();
-  await knex.migrate.latest();
-  await knex.seed.run({
-      specific:'01_users.js'
-  });
-});
 
-afterAll(async () => {
-  await knex.migrate.rollback();
-});
 
 describe('User.fetchByUsername', () => {
   it('throws NotFoundError for non existing username', async () => {
-    await expect(User.fetchByUsername('nonexistingusername')).rejects.toThrow(NotFoundError);
+    const trx = await transaction.start(Model.knex());
+    const spy = jest.spyOn(Model, 'query');
+    await expect(User.fetchByUsername('nonexistingusername', trx)).rejects.toThrow(NotFoundError);
+    expect(spy).toBeCalledWith(trx);
+    spy.mockRestore();
+    await trx.rollback();
   });
 
   it('fetch preexisting user', async () => {
-    const user = await User.fetchByUsername(userFixtures.rawData.testUser1.username);
+    const trx = await transaction.start(Model.knex());
+    const spy = jest.spyOn(Model, 'query');
+    const user = await User.fetchByUsername(userFixtures.rawData.testUser1.username, trx);
     expect(user).toBeInstanceOf(User);
     expect(user.id).toBe(userFixtures.rawData.testUser1.id);
     expect(user.username).toBe(userFixtures.rawData.testUser1.username);
     expect(user.password).toBe(userFixtures.rawData.testUser1.passwordHash);
+    expect(spy).toBeCalledWith(trx);
+    spy.mockRestore();
+    await trx.rollback();
   });
 });
 
 describe('User.insertAndFetchUser', () => {
   it('throws UniqueViolationError if duplicate username is inserted', async () => {
-    await expect(User.insertAndFetchUser('test1','somepasshash')).rejects.toThrow(UniqueViolationError);
+    const trx = await transaction.start(Model.knex());
+    const spy = jest.spyOn(Model, 'query');
+    await expect(User.insertAndFetchUser('test1','somepasshash',trx)).rejects.toThrow(UniqueViolationError);
+    expect(spy).toBeCalledWith(trx);
+    spy.mockRestore();
+    await trx.rollback();
   });
 
   it('inserts and returns new User with new given username', async () => {
-    const user = await User.insertAndFetchUser('newusername','passhash');
+     const spy = jest.spyOn(Model, 'query');
+
+    const trx = await transaction.start(Model.knex());
+    const user = await User.insertAndFetchUser('newusername','passhash',trx);
     expect(user).toBeInstanceOf(User);
     expect(user.password).toBe('passhash');
     expect(user.username).toBe('newusername');
     expect(user.id).toBeDefined();
-    const queriedUser = await User.query().findOne({username: 'newusername'});
+    const queriedUser = await User.query(trx).findOne({username: 'newusername'});
     expect(user.password).toBe(queriedUser.password);
     expect(user.username).toBe(queriedUser.username);
     expect(user.id).toBe(queriedUser.id);
+    expect(spy).toBeCalledWith(trx);
+    spy.mockRestore();
+    await trx.rollback();
   });
 });

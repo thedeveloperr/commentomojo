@@ -6,11 +6,11 @@ class User extends BaseModel {
   static get tableName(){
     return 'users';
   }
-  static fetchByUsername(username) {
-    return super.query().findOne({username}).throwIfNotFound();
+  static fetchByUsername(username, trx) {
+    return super.query(trx).findOne({username}).throwIfNotFound();
   }
-  static insertAndFetchUser(username, passwordHash) {
-    return super.query().insertAndFetch({ username, password: passwordHash });
+  static insertAndFetchUser(username, passwordHash, trx) {
+    return super.query(trx).insertAndFetch({ username, password: passwordHash }).throwIfNotFound();
   }
 }
 

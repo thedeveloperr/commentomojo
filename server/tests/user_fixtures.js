@@ -1,15 +1,15 @@
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
 passwordUser1 = "testpass1";
 passwordUser2 = "testpass2";
 passwordUser3 = "testpass3";
 passwordUser4 = "testpass4";
 passwordUser5 = 'testpass5';
-let hashPass1 = bcrypt.hashSync(passwordUser1, saltRounds);
-let hashPass2 = bcrypt.hashSync(passwordUser2, saltRounds);
-let hashPass3 = bcrypt.hashSync(passwordUser3, saltRounds);
-let hashPass4 = bcrypt.hashSync(passwordUser4, saltRounds);
-let hashPass5 = bcrypt.hashSync(passwordUser5, saltRounds);
+
+// bcrypt 10 saltrounds hashes
+let hashPass1 = '$2b$10$k73rFRaVXlnnfQEAEyaCpuJuoxSSwlqf1kvkcXoYmJ0YrI1ZB1A.m';
+let hashPass2 = '$2b$10$Jg5GbydT5TxWm7T1N3tToO3jK3MGru8M1fzNppMOclQ1ttAks2c4i';
+let hashPass3 = '$2b$10$A76Ip6RC02M6lR.Of70kBOA7dc5OvPLum.9KSOfhv8nLSX8BuoTAi';
+let hashPass4 = '$2b$10$XA/hbSpytdSU0HzT/FG.2OdBc9wl3iFTSLdzhxqHbugfn2agfrIfK';
+let hashPass5 = '$2b$10$85dBNw9gttXcf4dOU0UkBu7LM5XBsINpuNIlyk4llEV0bAq42e206';
 exports.seedData = [
         {id: 1, username: 'test1', password:hashPass1 },
         {id: 2, username: 'test2', password:hashPass2 },
