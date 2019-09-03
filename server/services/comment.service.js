@@ -55,7 +55,7 @@ exports.insertComment = async (postId, commenterId, text) => {
   }
 };
 
-exports.upvote = async function(parentCommentId, voterId) {
+exports.upvote = async (parentCommentId, voterId) => {
   let comment;
   try {
     comment = await Comment.fetchComment(parentCommentId);
@@ -76,7 +76,7 @@ exports.upvote = async function(parentCommentId, voterId) {
   }
 };
 
-exports.downvote = async function(parentCommentId, voterId) {
+exports.downvote = async (parentCommentId, voterId) => {
   let comment;
   try {
     comment = await Comment.fetchComment(parentCommentId);
@@ -98,7 +98,7 @@ exports.downvote = async function(parentCommentId, voterId) {
   }
 };
 
-exports.removeDownvote = async function(parentCommentId, voterId) {
+exports.removeDownvote = async (parentCommentId, voterId) => {
   let comment;
   try {
     comment = await Comment.fetchComment(parentCommentId);
@@ -118,7 +118,7 @@ exports.removeDownvote = async function(parentCommentId, voterId) {
   }
 };
 
-exports.removeUpvote = async function(parentCommentId, voterId) {
+exports.removeUpvote = async (parentCommentId, voterId) => {
   let comment;
   try {
     comment = await Comment.fetchComment(parentCommentId);
