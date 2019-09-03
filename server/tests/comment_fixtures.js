@@ -23,6 +23,7 @@ const commenterRawData = {
 exports.commenterRawData = commenterRawData;
 const voteSeedData = [];
 const postId1Comments = [];
+const postId2Comments = [];
 const fakeComments = [
   'Voluptates minus dicta ut ipsam omnis cumque nesciunt eveniet accusantium.',
   'At dolorem non delectus reprehenderit mollitia.',
@@ -46,9 +47,9 @@ for(var i = 1; i <5; i++) {
   });
 }
 for(i = 5; i <7; i++) {
-  postId1Comments.push({
+  postId2Comments.push({
     id:i,
-    parentPostId: 1,
+    parentPostId: 2,
     commenterId: commenterRawData.testUser2.id,
     text: fakeComments[i-1],
     upvotes: 0,
@@ -103,7 +104,6 @@ voteSeedData.push({
   voterId: commenterRawData.testUser3.id,
 });
 
-const postId2Comments = [];
 postId2Comments.push({
   id:9,
   parentPostId: 2,

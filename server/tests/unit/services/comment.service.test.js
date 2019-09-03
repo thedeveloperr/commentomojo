@@ -15,8 +15,7 @@ const {
   ForeignKeyViolationError,
 } = require('objection-db-errors');
 
-function transactionMocksOnly() {
-  }
+
 jest.mock('objection',()=> {
   const original = require.requireActual('objection');
   return {

@@ -32,9 +32,11 @@ function handleCommentNotFound(err) {
   throw new AppError();
 }
 
-exports.getComments = async (postId) =>{
+exports.getComments = async (postId, lastCommentId, limit) =>{
   try {
-    const comments = await Comment.getCommentsOnPost(postId);
+    lastCommentId = lastCommentId || 0;
+    limit = limit || 10;
+    const comments = await Comment.getCommentsOnPost(postId, lastCommentId, limit);
     return comments;
   }
   catch (err) {

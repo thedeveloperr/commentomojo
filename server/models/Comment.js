@@ -11,8 +11,8 @@ class Comment extends BaseModel {
   static fetchComment(id, trx) {
      return super.query(trx).fetchById(id).throwIfNotFound();
   }
-  static getCommentsOnPost(postId, trx) {
-    return super.query(trx).where('parentPostId', postId).throwIfNotFound();
+  static getCommentsOnPost(postId, lastCommentId, limit, trx) {
+    return super.query(trx).where('parentPostId', postId).andWhere('id','>',lastCommentId).limit(limit).orderBy('id').throwIfNotFound();
   }
   static insertCommentOnPost(parentPostId, commenterId, text, trx) {
     return super.query(trx).insertAndFetch({ parentPostId, commenterId, text });
