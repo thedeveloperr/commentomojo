@@ -11,7 +11,7 @@ const {
 } = require('objection-db-errors');
 const bcrypt = require('bcrypt');
 const saltNumber = 10;
-exports.signup = async function(username, password) {
+exports.signup = async (username, password) => {
   try {
     const passwordHash = await bcrypt.hash(password, saltNumber);
     const insertedUser = await User.insertAndFetchUser(username, passwordHash);
@@ -23,8 +23,17 @@ exports.signup = async function(username, password) {
     throw new AppError();
   }
 };
-
-exports.authenticateAndGetUser = async function(username, password) {
+exports.getUserFromId = async (id) => {
+  try {
+    return await User.fetchById(id);
+  }
+  catch {
+    if(err instanceof NotFoundError) throw new UserNotFoundError();
+    console.error(err);
+    throw new AppError();
+  }
+};
+exports.authenticateAndGetUser = async (username, password) => {
   try {
     var user = await User.fetchByUsername(username);
     var match = await bcrypt.compare(password, user.password);
