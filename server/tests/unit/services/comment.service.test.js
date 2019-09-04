@@ -7,6 +7,7 @@ const CommentNotFoundError = require('../../../errors/CommentNotFoundError');
 const VoteNotFoundError = require('../../../errors/VoteNotFoundError');
 const AlreadyVotedError = require('../../../errors/AlreadyVotedError');
 const VoterNotFoundError = require('../../../errors/VoterNotFoundError');
+const CommenterNotFoundError = require('../../../errors/CommenterNotFoundError');
 const SelfVoteError = require('../../../errors/SelfVoteError');
 const CommentFixture = require('../../comment_fixtures');
 const CommentService = require('../../../services/comment.service.js');
@@ -59,7 +60,13 @@ describe('CommentService.insertComment', ()=>{
         parentPostId: 1, id:1, commenterId: 2, text:"c1" ,upvotes:0, downvotes: 0
     };
     Comment.insertCommentOnPost.mockResolvedValue(newComment);
-    await expect(CommentService.insertComment(1,2,"c1")).resolves.toBe(newComment)
+    await expect(CommentService.insertComment(1,2,"c1")).resolves.toBe(newComment);
+    expect(Comment.insertCommentOnPost).toBeCalledWith(1, 2, "c1");
+  });
+  it('throws user not found error for no exisitng user.', async () =>{
+    Comment.insertCommentOnPost.mockRejectedValue(new ForeignKeyViolationError({ nativeError: new Error('native') }));
+    await expect(CommentService.insertComment(1,2,"c1")).rejects.toThrow(CommenterNotFoundError);
+    expect(Comment.insertCommentOnPost).toBeCalledWith(1, 2, "c1");
   });
 
 });

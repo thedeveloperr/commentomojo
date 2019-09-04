@@ -2,6 +2,7 @@ const Comment = require('../models/Comment');
 const Vote = require('../models/Vote.js');
 const CommentNotFoundError = require('../errors/CommentNotFoundError');
 const VoteNotFoundError = require('../errors/VoteNotFoundError');
+const CommenterNotFoundError = require('../errors/CommenterNotFoundError');
 const AlreadyVotedError = require('../errors/AlreadyVotedError');
 const VoterNotFoundError = require('../errors/VoterNotFoundError');
 const SelfVoteError = require('../errors/SelfVoteError');
@@ -46,10 +47,11 @@ exports.getComments = async (postId, lastCommentId, limit) =>{
 
 exports.insertComment = async (postId, commenterId, text) => {
   try {
-    const comment = await Comment.insertCommentOnPost(postId);
+    const comment = await Comment.insertCommentOnPost(postId, commenterId, text);
     return comment;
   }
   catch (err) {
+    if (err instanceof ForeignKeyViolationError) throw new CommenterNotFoundError();
     console.error(err);
     throw new AppError();
   }
