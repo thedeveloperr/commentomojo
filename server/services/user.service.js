@@ -25,7 +25,9 @@ exports.signup = async (username, password) => {
 };
 exports.getUserFromId = async (id) => {
   try {
-    return await User.fetchById(id);
+    const user = await User.fetchById(id);
+    user.password = "HIDDEN";
+    return user;
   }
   catch {
     if(err instanceof NotFoundError) throw new UserNotFoundError();
