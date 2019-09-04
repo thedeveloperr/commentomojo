@@ -105,6 +105,18 @@ describe('Comment.getCommentsOnPost', () => {
     await trx.rollback();
   });
 
+  it('throws NotFoundError for limit 0', async () => {
+    const postId = 1;
+    const lastCommentId = 1001;
+    const trx = await transaction.start(Model.knex());
+    const spy = jest.spyOn(Model, 'query');
+    await expect(Comment.getCommentsOnPost(postId, lastCommentId, 0, trx)).rejects.toThrow(NotFoundError);
+    expect(spy).toBeCalledWith(trx);
+    spy.mockRestore();
+    await trx.rollback();
+  });
+
+
 
   it('fetch multiple comments on a post', async () => {
     let postId = 1;
