@@ -94,6 +94,18 @@ describe('Comment.getCommentsOnPost', () => {
     await trx.rollback();
   });
 
+  it('throws NotFoundError for lastCommentId > largest comment id for a post', async () => {
+    const postId = 1;
+    const lastCommentId = 1001;
+    const trx = await transaction.start(Model.knex());
+    const spy = jest.spyOn(Model, 'query');
+    await expect(Comment.getCommentsOnPost(postId, lastCommentId, 10, trx)).rejects.toThrow(NotFoundError);
+    expect(spy).toBeCalledWith(trx);
+    spy.mockRestore();
+    await trx.rollback();
+  });
+
+
   it('fetch multiple comments on a post', async () => {
     let postId = 1;
     const trx = await transaction.start(Model.knex());
@@ -117,8 +129,8 @@ describe('Comment.getCommentsOnPost', () => {
     postId = 2;
     limit = 10;
     previousId = 5;
-    const fetchedComments2 = await Comment.getCommentsOnPost(postId, previousId, limit, trx);
-    const postId2Comments = [...commentFixtures.seededPost2Comments];
+    let fetchedComments2 = await Comment.getCommentsOnPost(postId, previousId, limit, trx);
+    let postId2Comments = [...commentFixtures.seededPost2Comments];
     postId2Comments.sort((a,b)=>a.id-b.id);
     let postId2CommentsPortion = postId2Comments.filter(e=>e.id > previousId).slice(0,limit);
     fetchedComments2.forEach((e, index)=>{
@@ -131,6 +143,25 @@ describe('Comment.getCommentsOnPost', () => {
     });
     expect(spy).toBeCalledWith(trx);
     expect(fetchedComments2.length).toBe(postId2CommentsPortion.length);
+    spy.mockClear();
+    postId = 2;
+    limit = 10;
+    previousId = 0;
+    fetchedComments2 = await Comment.getCommentsOnPost(postId, previousId, limit, trx);
+    postId2Comments = [...commentFixtures.seededPost2Comments];
+    postId2Comments.sort((a,b)=>a.id-b.id);
+    postId2CommentsPortion = postId2Comments.filter(e=>e.id > previousId).slice(0,limit);
+    fetchedComments2.forEach((e, index)=>{
+      expect(e).toBeInstanceOf(Comment);
+      expect(e.parentPostId).toBe(2);
+      expect(e.id).toBe(postId2CommentsPortion[index].id);
+      expect(e.text).toBe(postId2CommentsPortion[index].text);
+      expect(e.upvotes).toBe(postId2CommentsPortion[index].upvotes);
+      expect(e.downvotes).toBe(postId2CommentsPortion[index].downvotes);
+    });
+    expect(spy).toBeCalledWith(trx);
+    expect(fetchedComments2.length).toBe(postId2CommentsPortion.length);
+
     spy.mockRestore();
     await trx.rollback();
   });
