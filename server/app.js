@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const session = require("express-session");
 const Auth = require('./middlewares/Auth');
 const UserRoutes = require('./routes/UserRoutes');
+const CommentRoutes = require('./routes/CommentRoutes');
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -23,4 +24,5 @@ app.use(session({
 app.use(Auth.init);
 app.use(Auth.session);
 app.use('/user', UserRoutes);
+app.use('/comments', CommentRoutes);
 module.exports = app;
