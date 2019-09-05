@@ -1,7 +1,7 @@
 const AppError = require('./AppError');
 class AlreadyVotedError extends AppError {
   constructor(message) {
-    super(message || 'Not Found. Invalid Voter or Comment.', 409);
+    super(message || 'Already Voted Cannot vote twice on same comment.', 409);
   }
 }
 module.exports = AlreadyVotedError;
