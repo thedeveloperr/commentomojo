@@ -74,4 +74,14 @@ exports.validateGetCommentRequest = (req, res, next) => {
   next();
 
 }
+exports.validateVoteRequest = (req, res, next) => {
+  if (!req.params)
+    return res.status(400).json({status: 400, message: `parentCommentId param missing.`});
 
+  if (!req.params.parentCommentId)
+    return res.status(400).json({status: 400, message: `parentCommentId param is missing.`});
+  if (isNaN(req.params.parentCommentId))
+    return res.status(400).json({status: 400, message: `parentCommentId param is not a number but expected to be.`});
+  next();
+
+}
