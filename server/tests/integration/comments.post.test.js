@@ -49,7 +49,11 @@ describe('POST /comments', () => {
     // Ensure new comment addition
     const newComment = response.body.data.comment;
     const initialSeededDataPost1 = commentFixtures.seededPost1Comments;
-    const expectedFreshCommentList = [...initialSeededDataPost1, newComment];
+
+    // insert usernames of commenters in test comments
+    const {userIdToDataMap} = userFixtures;
+    const expectedFreshCommentList = [...initialSeededDataPost1, newComment]
+        .map(e=>({...e,commenterUsername: userIdToDataMap[e.commenterId].username}));
     response = await agent
       .get('/comments/')
       .query({
@@ -81,6 +85,11 @@ describe('POST /comments', () => {
 
     // Ensure no new addition
     const initialSeededDataPost1 = commentFixtures.seededPost1Comments;
+    const {userIdToDataMap} = userFixtures;
+    const expectedOldCommentList = initialSeededDataPost1.map(e=>({
+        ...e,
+        commenterUsername: userIdToDataMap[e.commenterId].username
+    }));
     response = await agent
       .get('/comments/')
       .query({
@@ -90,7 +99,7 @@ describe('POST /comments', () => {
       })
       .set('Accept', 'application/json');
     expect(response.status).toEqual(200);
-    expect(response.body.data.comments).toEqual(initialSeededDataPost1);
+    expect(response.body.data.comments).toEqual(expectedOldCommentList);
 
   }, 10000);
 
@@ -146,6 +155,11 @@ describe('POST /comments', () => {
 
     // Ensure no new addition
     const initialSeededDataPost1 = commentFixtures.seededPost1Comments;
+    const {userIdToDataMap} = userFixtures;
+    const expectedOldCommentList = initialSeededDataPost1.map(e=>({
+        ...e,
+        commenterUsername: userIdToDataMap[e.commenterId].username
+    }));
     response = await agent
       .get('/comments/')
       .query({
@@ -155,7 +169,7 @@ describe('POST /comments', () => {
       })
       .set('Accept', 'application/json');
     expect(response.status).toEqual(200);
-    expect(response.body.data.comments).toEqual(initialSeededDataPost1);
+    expect(response.body.data.comments).toEqual(expectedOldCommentList);
 
   }, 10000);
 

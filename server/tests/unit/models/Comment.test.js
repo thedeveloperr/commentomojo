@@ -153,8 +153,11 @@ describe('Comment.getCommentsOnPost', () => {
     const postId1Comments = [...commentFixtures.seededPost1Comments];
     postId1Comments.sort((a,b)=>a.id-b.id);
     let postId1CommentsPortion = postId1Comments.filter(e=>e.id > previousId).slice(0,limit);
+    const {userIdToDataMap} = userFixtures;
     fetchedComments.forEach((e, index)=>{
       expect(e).toBeInstanceOf(Comment);
+      expect(e.commenterId).toBe(postId1CommentsPortion[index].commenterId);
+      expect(e.commenterUsername).toBe(userIdToDataMap[e.commenterId].username);
       expect(e.parentPostId).toBe(1);
       expect(e.id).toBe(postId1CommentsPortion[index].id);
       expect(e.text).toBe(postId1CommentsPortion[index].text);
@@ -172,6 +175,8 @@ describe('Comment.getCommentsOnPost', () => {
     let postId2CommentsPortion = postId2Comments.filter(e=>e.id > previousId).slice(0,limit);
     fetchedComments2.forEach((e, index)=>{
       expect(e).toBeInstanceOf(Comment);
+      expect(e.commenterId).toBe(postId2CommentsPortion[index].commenterId);
+      expect(e.commenterUsername).toBe(userIdToDataMap[e.commenterId].username);
       expect(e.parentPostId).toBe(2);
       expect(e.id).toBe(postId2CommentsPortion[index].id);
       expect(e.text).toBe(postId2CommentsPortion[index].text);
@@ -191,6 +196,8 @@ describe('Comment.getCommentsOnPost', () => {
     fetchedComments2.forEach((e, index)=>{
       expect(e).toBeInstanceOf(Comment);
       expect(e.parentPostId).toBe(2);
+      expect(e.commenterId).toBe(postId2CommentsPortion[index].commenterId);
+      expect(e.commenterUsername).toBe(userIdToDataMap[e.commenterId].username);
       expect(e.id).toBe(postId2CommentsPortion[index].id);
       expect(e.text).toBe(postId2CommentsPortion[index].text);
       expect(e.upvotes).toBe(postId2CommentsPortion[index].upvotes);

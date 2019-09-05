@@ -12,7 +12,11 @@ class Comment extends BaseModel {
      return super.query(trx).findById(id).throwIfNotFound();
   }
   static getCommentsOnPost(postId, lastCommentId, limit, trx) {
-    return super.query(trx).where('parentPostId', postId).andWhere('id','>',lastCommentId).limit(limit).orderBy('id').throwIfNotFound();
+    return super.query(trx).select('comments.*','commenter.username as commenterUsername')
+          .join('users as commenter','comments.commenterId','commenter.id')
+          .where('comments.parentPostId', postId)
+          .andWhere('comments.id','>',lastCommentId)
+          .limit(limit).orderBy('comments.id').throwIfNotFound();
   }
   static insertCommentOnPost(parentPostId, commenterId, text, trx) {
     return super.query(trx).insertAndFetch({ parentPostId, commenterId, text });

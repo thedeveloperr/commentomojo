@@ -31,10 +31,12 @@ describe('GET /comments', () => {
     limit = limit || 10;
     postCommentsfixtures.sort((a,b)=>a.id-b.id);
     const limitedComments = postCommentsfixtures.filter(e=>e.id > lastCommentId).slice(0,limit);
-
+    const {userIdToDataMap} = userFixtures;
     expect(fetchedComments.length).toBe(limitedComments.length);
     fetchedComments.forEach((e, index)=>{
       expect(e.parentPostId).toBe(parentPostId);
+      expect(e.commenterId).toBe(limitedComments[index].commenterId);
+      expect(e.commenterUsername).toBe(userIdToDataMap[e.commenterId].username);
       expect(e.id).toBe(limitedComments[index].id);
       expect(e.text).toBe(limitedComments[index].text);
       expect(e.upvotes).toBe(limitedComments[index].upvotes);
