@@ -49,3 +49,9 @@ testUser5: {
   }
 
 };
+
+const userIdToDataMap = {};
+Object.keys(exports.rawData).forEach(function(key) {
+    userIdToDataMap[exports.rawData[key].id] = {...exports.rawData[key]};
+});
+exports.userIdToDataMap = userIdToDataMap;
