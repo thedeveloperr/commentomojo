@@ -11,6 +11,31 @@ const {
   transaction,
   Model
 } = require('objection');
+
+describe('Comment.fetchComment', () => {
+  it('throws NotFoundError for non existing comment id', async () => {
+    const trx = await transaction.start(Model.knex());
+    const commentId = 100001;
+    const spy = jest.spyOn(Model, 'query');
+    await expect(Comment.fetchComment(commentId, trx)).rejects.toThrow(NotFoundError);
+    expect(spy).toBeCalledWith(trx);
+    spy.mockRestore();
+    await trx.rollback();
+  });
+
+  it('fetch comment', async () => {
+    const seededCommentToCompare = commentFixtures.seededPost1Comments[2];
+    const trx = await transaction.start(Model.knex());
+    const spy = jest.spyOn(Model, 'query');
+    const fetchedComment = await Comment.fetchComment(seededCommentToCompare.id, trx);
+    expect(fetchedComment).toEqual(seededCommentToCompare);
+    expect(spy).toBeCalledWith(trx);
+    spy.mockRestore();
+    await trx.rollback();
+  });
+});
+
+
 describe('Comment.insertCommentOnPost', () => {
   it('throws ForeignKeyViolationError for non existing commenterId in users', async () => {
     const trx = await transaction.start(Model.knex());

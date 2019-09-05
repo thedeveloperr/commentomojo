@@ -9,7 +9,7 @@ class Comment extends BaseModel {
     return 'comments';
   }
   static fetchComment(id, trx) {
-     return super.query(trx).fetchById(id).throwIfNotFound();
+     return super.query(trx).findById(id).throwIfNotFound();
   }
   static getCommentsOnPost(postId, lastCommentId, limit, trx) {
     return super.query(trx).where('parentPostId', postId).andWhere('id','>',lastCommentId).limit(limit).orderBy('id').throwIfNotFound();
