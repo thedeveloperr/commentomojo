@@ -4,6 +4,7 @@ const session = require("express-session");
 const Auth = require('./middlewares/Auth');
 const UserRoutes = require('./routes/UserRoutes');
 const CommentRoutes = require('./routes/CommentRoutes');
+const knex = require('./db/config');
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
