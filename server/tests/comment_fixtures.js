@@ -65,17 +65,20 @@ postId1Comments.push({
   downvotes: 0
 });
 voteSeedData.push({
+  parentPostId:1,
   parentCommentId : 7,
   upvote: true,
   voterId: commenterRawData.testUser1.id,
 });
 voteSeedData.push({
+parentPostId:1,
   parentCommentId : 7,
   upvote: true,
   voterId: commenterRawData.testUser2.id,
 });
 voteSeedData.push({
   parentCommentId : 7,
+  parentPostId:1,
   upvote: true,
   voterId: commenterRawData.testUser4.id,
 });
@@ -90,16 +93,19 @@ postId1Comments.push({
 });
 voteSeedData.push({
   parentCommentId : 8,
+  parentPostId:1,
   upvote: false,
   voterId: commenterRawData.testUser1.id,
 });
 voteSeedData.push({
   parentCommentId : 8,
+  parentPostId:1,
   upvote: false,
   voterId: commenterRawData.testUser2.id,
 });
 voteSeedData.push({
   parentCommentId : 8,
+  parentPostId:1,
   upvote: false,
   voterId: commenterRawData.testUser3.id,
 });
@@ -114,16 +120,19 @@ postId2Comments.push({
 });
 voteSeedData.push({
   parentCommentId : 9,
+  parentPostId:2,
   upvote: true,
   voterId: commenterRawData.testUser1.id,
 });
 voteSeedData.push({
   parentCommentId : 9,
+  parentPostId:2,
   upvote: true,
   voterId: commenterRawData.testUser4.id,
 });
 voteSeedData.push({
   parentCommentId : 9,
+  parentPostId:2,
   upvote: false,
   voterId: commenterRawData.testUser3.id,
 });
@@ -138,11 +147,13 @@ postId2Comments.push({
 });
 voteSeedData.push({
   parentCommentId : 10,
+  parentPostId:2,
   upvote: true,
   voterId: commenterRawData.testUser4.id,
 });
 voteSeedData.push({
   parentCommentId : 10,
+  parentPostId:2,
   upvote: false,
   voterId: commenterRawData.testUser3.id,
 });

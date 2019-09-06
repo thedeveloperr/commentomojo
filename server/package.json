@@ -4,9 +4,9 @@
   "description": "Rentomojo assignment comment_system_server",
   "main": "index.js",
   "scripts": {
-    "dev_server": "npx knex migrate:latest && npx knex seed:run && node index.js",
-    "test_unit": "npx knex migrate:latest --env test && npx knex seed:run --env test && NODE_ENV=test jest --testPathPattern=\/unit\/",
-    "test_integration": "npx knex migrate:latest --env integration_test && npx knex seed:run --env integration_test && NODE_ENV=integration_test jest --runInBand --testPathPattern=\/integration\/"
+    "dev_server": "npx knex migrate:rollback && npx knex migrate:latest && npx knex seed:run && node index.js",
+    "test_unit": "npx knex migrate:rollback --env test && npx knex migrate:latest --env test && npx knex seed:run --env test && NODE_ENV=test jest --testPathPattern=\/unit\/",
+    "test_integration": "npx knex migrate:rollback --env integration_test &&  npx knex migrate:latest --env integration_test && npx knex seed:run --env integration_test && NODE_ENV=integration_test jest --runInBand --testPathPattern=\/integration\/"
   },
   "author": "mohitgupta3mail@gmail.com",
   "license": "ISC",

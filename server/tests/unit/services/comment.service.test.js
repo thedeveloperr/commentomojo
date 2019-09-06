@@ -84,7 +84,7 @@ describe('CommentService.upvote', ()=>{
       commenterId: 1,
       id: 2
     });
-    await expect(CommentService.upvote(2, 1)).rejects.toThrow(SelfVoteError);
+    await expect(CommentService.upvote(1,2, 1)).rejects.toThrow(SelfVoteError);
     expect(transaction.start).toBeCalledTimes(0);
   });
 
@@ -96,15 +96,16 @@ describe('CommentService.upvote', ()=>{
     Vote.knex.mockReturnValue(knexMock);
     transaction.start.mockResolvedValue(trxMock);
     Comment.fetchComment.mockResolvedValue({
+      parentPostId: 1,
       commenterId: 1,
       id: 2,
       upvotes: 1
     });
     Vote.insertUpvote.mockRejectedValue(new ForeignKeyViolationError({ nativeError: new Error('native') }));
-    await expect(CommentService.upvote(2,2)).rejects.toThrow(VoterNotFoundError);
+    await expect(CommentService.upvote(1, 2, 2)).rejects.toThrow(VoterNotFoundError);
     expect(transaction.start).toBeCalledTimes(1);
     expect(transaction.start).toBeCalledWith(knexMock);
-    expect(Vote.insertUpvote).toBeCalledWith(2,2, trxMock);
+    expect(Vote.insertUpvote).toBeCalledWith(1,2,2, trxMock);
     expect(trxMock.commit).toBeCalledTimes(0);
     expect(trxMock.rollback).toBeCalledTimes(1);
   });
@@ -117,15 +118,16 @@ describe('CommentService.upvote', ()=>{
     Vote.knex.mockReturnValue(knexMock);
     transaction.start.mockResolvedValue(trxMock);
     Comment.fetchComment.mockResolvedValue({
+      parentPostId:1,
       commenterId: 1,
       id: 2,
       upvotes: 1
     });
     Vote.insertUpvote.mockRejectedValue(new UniqueViolationError({ nativeError: new Error('native') }));
-    await expect(CommentService.upvote(2,2)).rejects.toThrow(AlreadyVotedError);
+    await expect(CommentService.upvote(1,2,2)).rejects.toThrow(AlreadyVotedError);
     expect(transaction.start).toBeCalledTimes(1);
     expect(transaction.start).toBeCalledWith(knexMock);
-    expect(Vote.insertUpvote).toBeCalledWith(2,2, trxMock);
+    expect(Vote.insertUpvote).toBeCalledWith(1,2,2, trxMock);
     expect(trxMock.commit).toBeCalledTimes(0);
     expect(trxMock.rollback).toBeCalledTimes(1);
 
@@ -138,6 +140,7 @@ describe('CommentService.upvote', ()=>{
     Vote.knex.mockReturnValue(knexMock);
     transaction.start.mockResolvedValue(trxMock);
     Comment.fetchComment.mockResolvedValue({
+      parentPostId:1,
       commenterId: 1,
       id: 2,
       upvotes: 1
@@ -149,10 +152,10 @@ describe('CommentService.upvote', ()=>{
       upvotes: 2
     };
     Comment.incrementUpvotes.mockResolvedValue(mockUpdatedComment);
-    await expect(CommentService.upvote(2,2)).resolves.toBe(mockUpdatedComment);
+    await expect(CommentService.upvote(1,2,2)).resolves.toBe(mockUpdatedComment);
     expect(transaction.start).toBeCalledTimes(1);
     expect(transaction.start).toBeCalledWith(knexMock);
-    expect(Vote.insertUpvote).toBeCalledWith(2,2, trxMock);
+    expect(Vote.insertUpvote).toBeCalledWith(1,2,2, trxMock);
     expect(Vote.insertUpvote).toBeCalledTimes(1);
     expect(Comment.incrementUpvotes).toBeCalledWith(2, trxMock);
     expect(Comment.incrementUpvotes).toBeCalledTimes(1);
@@ -175,7 +178,7 @@ describe('CommentService.downvote', ()=>{
       commenterId: 1,
       id: 2
     });
-    await expect(CommentService.downvote(2, 1)).rejects.toThrow(SelfVoteError);
+    await expect(CommentService.downvote(1,2, 1)).rejects.toThrow(SelfVoteError);
     expect(transaction.start).toBeCalledTimes(0);
   });
 
@@ -187,15 +190,16 @@ describe('CommentService.downvote', ()=>{
     Vote.knex.mockReturnValue(knexMock);
     transaction.start.mockResolvedValue(trxMock);
     Comment.fetchComment.mockResolvedValue({
+      parentPostId: 1,
       commenterId: 1,
       id: 2,
       downvotes: 1
     });
     Vote.insertDownvote.mockRejectedValue(new UniqueViolationError({ nativeError: new Error('native') }));
-    await expect(CommentService.downvote(2,2)).rejects.toThrow(AlreadyVotedError);
+    await expect(CommentService.downvote(1, 2,2)).rejects.toThrow(AlreadyVotedError);
     expect(transaction.start).toBeCalledTimes(1);
     expect(transaction.start).toBeCalledWith(knexMock);
-    expect(Vote.insertDownvote).toBeCalledWith(2,2, trxMock);
+    expect(Vote.insertDownvote).toBeCalledWith(1, 2,2, trxMock);
     expect(trxMock.commit).toBeCalledTimes(0);
     expect(trxMock.rollback).toBeCalledTimes(1);
 
@@ -208,21 +212,23 @@ describe('CommentService.downvote', ()=>{
     Vote.knex.mockReturnValue(knexMock);
     transaction.start.mockResolvedValue(trxMock);
     Comment.fetchComment.mockResolvedValue({
+      parentPostId: 1,
       commenterId: 1,
       id: 2,
       downvotes: 1
     });
     Vote.insertDownvote.mockResolvedValue({});
     const mockUpdatedComment = {
+      parentPostId: 1,
       commenterId:1,
       id: 2,
       downvotes: 2
     };
     Comment.incrementDownvotes.mockResolvedValue(mockUpdatedComment);
-    await expect(CommentService.downvote(2,2)).resolves.toBe(mockUpdatedComment);
+    await expect(CommentService.downvote(1, 2,2)).resolves.toBe(mockUpdatedComment);
     expect(transaction.start).toBeCalledTimes(1);
     expect(transaction.start).toBeCalledWith(knexMock);
-    expect(Vote.insertDownvote).toBeCalledWith(2,2, trxMock);
+    expect(Vote.insertDownvote).toBeCalledWith(1, 2,2, trxMock);
     expect(Vote.insertDownvote).toBeCalledTimes(1);
     expect(Comment.incrementDownvotes).toBeCalledWith(2, trxMock);
     expect(Comment.incrementDownvotes).toBeCalledTimes(1);

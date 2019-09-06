@@ -13,6 +13,20 @@ afterAll(async ()=>{
   await knex.seed.run();
 });
 
+async function fetchAllCommentsOfPostId(parentPostId,agent) {
+  response = await agent
+    .get(`/${parentPostId}/comments`)
+    .query({
+      lastCommentId: 0, // fetch all postId 1 comments
+        limit: 10000 // estimately set to more than num of postId1 comments
+      })
+      .set('Accept', 'application/json');
+    expect(response.status).toEqual(200);
+    expect(response.body.data.comments[0].parentPostId).toBe(parentPostId);
+  return response.body.data.comments;
+}
+
+
 describe('POST /comments', () => {
   it('add comment only when user is loggedin.', async () => {
     const userData = userFixtures.rawData.testUser1;
@@ -29,6 +43,9 @@ describe('POST /comments', () => {
     expect(response.header['set-cookie']).toBeDefined();
     expect(response.type).toEqual("application/json");
     expect(response.body.message).toBe("Successfully Loggedin !");
+
+    const fetchedOlderComments = await fetchAllCommentsOfPostId(1, agent);
+
     data = {
       comment: {
         parentPostId: 1,
@@ -36,7 +53,7 @@ describe('POST /comments', () => {
       }
     };
     response =  await agent
-      .post('/comments/')
+      .post(`/${data.comment.parentPostId}/comments`)
       .send(data)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(200);
@@ -48,24 +65,9 @@ describe('POST /comments', () => {
 
     // Ensure new comment addition
     const newComment = response.body.data.comment;
-    const initialSeededDataPost1 = commentFixtures.seededPost1Comments;
-
-    // insert usernames of commenters in test comments
-    const {userIdToDataMap} = userFixtures;
-    const expectedFreshCommentList = [...initialSeededDataPost1, newComment]
-        .map(e=>({...e,commenterUsername: userIdToDataMap[e.commenterId].username}));
-    response = await agent
-      .get('/comments/')
-      .query({
-        parentPostId: 1,
-        lastCommentId: 0, // fetch all postId 1 comments
-        limit: 10 // set to more than (num of postId 1 comments + 1) in fixtures
-      })
-      .set('Accept', 'application/json');
-    expect(response.status).toEqual(200);
-    expect(response.body.data.comments).toEqual(expectedFreshCommentList);
-
-
+    newComment.commenterUsername = userData.username;
+    const fetchedNewerComments = await fetchAllCommentsOfPostId(1, agent);
+    expect(fetchedNewerComments).toEqual([...fetchedOlderComments, newComment]);
   }, 10000);
 
   it('cannot add comment when user is not loggedin.', async () => {
@@ -76,31 +78,17 @@ describe('POST /comments', () => {
         text: "Test comment"
       }
     };
+    const fetchedCommentsBeforeTry = await fetchAllCommentsOfPostId(1, agent);
     response = await agent
-      .post('/comments/')
+      .post(`/${data.comment.parentPostId}/comments`)
       .send(data)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(401);
     expect(response.body.message).toBe("Login/Register to continue.");
 
     // Ensure no new addition
-    const initialSeededDataPost1 = commentFixtures.seededPost1Comments;
-    const {userIdToDataMap} = userFixtures;
-    const expectedOldCommentList = initialSeededDataPost1.map(e=>({
-        ...e,
-        commenterUsername: userIdToDataMap[e.commenterId].username
-    }));
-    response = await agent
-      .get('/comments/')
-      .query({
-        parentPostId: 1,
-        lastCommentId: 0, // fetch all postId 1 comments
-        limit: 10 // set to more than num of postId 1 comments in fixtures
-      })
-      .set('Accept', 'application/json');
-    expect(response.status).toEqual(200);
-    expect(response.body.data.comments).toEqual(expectedOldCommentList);
-
+    const fetchedCommentAfterTry = await fetchAllCommentsOfPostId(1, agent);
+    expect(fetchedCommentAfterTry).toEqual(fetchedCommentsBeforeTry);
   }, 10000);
 
    it('cannot add comment when params are missing.', async () => {
@@ -120,13 +108,14 @@ describe('POST /comments', () => {
     expect(response.type).toEqual("application/json");
     expect(response.body.message).toBe("Successfully Loggedin !");
 
+    const fetchedCommentsBeforeTry = await fetchAllCommentsOfPostId(1, agent);
     data = {
       comment: {
         text: "Test comment"
       }
     };
     response = await agent
-      .post('/comments/')
+      .post(`/${data.comment.parentPostId}/comments`)
       .send(data)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(400);
@@ -136,7 +125,7 @@ describe('POST /comments', () => {
       }
     };
     response = await agent
-      .post('/comments/')
+      .post(`/${data.comment.parentPostId}/comments`)
       .send(data)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(400);
@@ -147,30 +136,15 @@ describe('POST /comments', () => {
       }
     };
     response = await agent
-      .post('/comments/')
+      .post(`/${data.comment.parentPostId}/comments`)
       .send(data)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(400);
     expect(response.body.message).toBe("text param(s) missing.");
 
     // Ensure no new addition
-    const initialSeededDataPost1 = commentFixtures.seededPost1Comments;
-    const {userIdToDataMap} = userFixtures;
-    const expectedOldCommentList = initialSeededDataPost1.map(e=>({
-        ...e,
-        commenterUsername: userIdToDataMap[e.commenterId].username
-    }));
-    response = await agent
-      .get('/comments/')
-      .query({
-        parentPostId: 1,
-        lastCommentId: 0, // fetch all post 1 comments
-        limit: 10 // set to more than num of postId 1 comments in fixtures
-      })
-      .set('Accept', 'application/json');
-    expect(response.status).toEqual(200);
-    expect(response.body.data.comments).toEqual(expectedOldCommentList);
-
+    const fetchedCommentAfterTry = await fetchAllCommentsOfPostId(1, agent);
+    expect(fetchedCommentAfterTry).toEqual(fetchedCommentsBeforeTry);
   }, 10000);
 
 });

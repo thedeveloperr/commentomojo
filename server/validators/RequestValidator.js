@@ -58,15 +58,15 @@ exports.validatePostCommentRequest = (req, res, next) => {
 };
 
 exports.validateGetCommentRequest = (req, res, next) => {
-  if (!req.query) {
+  if (!req.params) {
     return res.status(400).json({status: 400, message: `GET req params missing.`});
   }
 
-  if (!req.query.parentPostId) {
+  if (!req.params.parentPostId) {
     return res.status(400).json({status: 400, message: `parentPostId param is missing.`});
   }
   const notNumbers = [];
-  if (isNaN(parseInt(req.query.parentPostId))) notNumbers.push('parentPostId');
+  if (isNaN(parseInt(req.params.parentPostId))) notNumbers.push('parentPostId');
   if (isNaN(parseInt(req.query.lastCommentId)) && req.query.lastCommentId !== undefined) notNumbers.push('lastCommentId');
   if (isNaN(parseInt(req.query.limit)) && req.query.limit !== undefined) notNumbers.push('limit');
   if (notNumbers.length > 0)
@@ -78,8 +78,10 @@ exports.validateVoteRequest = (req, res, next) => {
   if (!req.params)
     return res.status(400).json({status: 400, message: `parentCommentId param missing.`});
 
-  if (!req.params.parentCommentId)
+  if (!req.params.parentCommentId){
+    console.warn("parentCommentId missing")
     return res.status(400).json({status: 400, message: `parentCommentId param is missing.`});
+  }
   if (isNaN(req.params.parentCommentId))
     return res.status(400).json({status: 400, message: `parentCommentId param is not a number but expected to be.`});
   next();

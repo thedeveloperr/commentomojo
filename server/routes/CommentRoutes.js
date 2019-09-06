@@ -4,29 +4,29 @@ const AuthMiddleware = require('../middlewares/Auth');
 const ReqValidator = require('../validators/RequestValidator');
 const router = express.Router();
 
-router.post('/',
+router.post('/:parentPostId/comments',
   AuthMiddleware.isAuthenticated,
   ReqValidator.validatePostCommentRequest,
   CommentController.postComment);
-router.get('/',
+router.get('/:parentPostId/comments',
   ReqValidator.validateGetCommentRequest,
   CommentController.showComments);
-router.put('/:parentCommentId/upvote',
+router.put('/:parentPostId/comments/:parentCommentId/upvote',
   AuthMiddleware.isAuthenticated,
   ReqValidator.validateVoteRequest,
   CommentController.upvote
 );
-router.put('/:parentCommentId/downvote',
+router.put('/:parentPostId/comments/:parentCommentId/downvote',
   AuthMiddleware.isAuthenticated,
   ReqValidator.validateVoteRequest,
   CommentController.downvote
 );
-router.delete('/:parentCommentId/downvote',
+router.delete('/:parentPostId/comments/:parentCommentId/downvote',
   AuthMiddleware.isAuthenticated,
   ReqValidator.validateVoteRequest,
   CommentController.removeDownvote
 );
-router.delete('/:parentCommentId/upvote',
+router.delete('/:parentPostId/comments/:parentCommentId/upvote',
   AuthMiddleware.isAuthenticated,
   ReqValidator.validateVoteRequest,
   CommentController.removeUpvote

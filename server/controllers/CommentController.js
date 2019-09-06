@@ -10,20 +10,32 @@ exports.postComment = async (req, res) => {
 }
 
 exports.showComments = async (req, res) => {
-    const {parentPostId, lastCommentId, limit} = req.query;
+    const {lastCommentId, limit} = req.query;
+    const {parentPostId} = req.params;
     try {
+      const data = {};
       let comments = await CommentService.getComments(parentPostId, lastCommentId, limit)
-      return res.status(200).json({ status: 200, data: {comments} });
+
+      // When loggedin
+      if (req.user) {
+        let votesByLoggedinUser = await CommentService.getActiveVotesComments(parentPostId, req.user.id, lastCommentId, limit);
+        if (votesByLoggedinUser.length > 0)
+        comments = CommentService.mergeCurrentUserCommentsVoteInfo(votesByLoggedinUser, comments);
+        data.username = req.user.username;
+      }
+      data.comments = comments;
+      return res.status(200).json({ status: 200, data });
     } catch (e) {
       return res.status(e.status).json({ status: e.status, message: e.message });
     }
 }
 
 exports.upvote = async (req, res) => {
-    let {parentCommentId} = req.params;
+    let {parentPostId, parentCommentId} = req.params;
     parentCommentId = parseInt(parentCommentId);
+    parentPostId = parseInt(parentPostId);
     try {
-      const comment = await CommentService.upvote(parentCommentId, req.user.id);
+      const comment = await CommentService.upvote(parentPostId, parentCommentId, req.user.id);
       return res.status(200).json({ status: 200, data: {comment}, message: "Vote Added!" });
     } catch (e) {
       return res.status(e.status).json({ status: e.status, message: e.message });
@@ -31,9 +43,11 @@ exports.upvote = async (req, res) => {
 }
 
 exports.downvote = async (req, res) => {
-    const {parentCommentId} = req.params;
+    let {parentPostId, parentCommentId} = req.params;
+    parentCommentId = parseInt(parentCommentId);
+    parentPostId = parseInt(parentPostId);
     try {
-      const comment = await CommentService.downvote(parentCommentId, req.user.id);
+      const comment = await CommentService.downvote(parentPostId, parentCommentId, req.user.id);
       return res.status(200).json({ status: 200, data: {comment}, message: "Vote Added!" });
     } catch (e) {
       return res.status(e.status).json({ status: e.status, message: e.message });

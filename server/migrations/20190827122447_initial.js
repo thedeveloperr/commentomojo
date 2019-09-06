@@ -23,6 +23,12 @@ exports.up = function(knex) {
     .createTable('votes', table => {
       table.boolean('upvote');
       table
+        .integer('parentPostId')
+        .notNull()
+        .unsigned()
+        .index();
+
+      table
         .integer('parentCommentId')
         .notNull()
         .unsigned()

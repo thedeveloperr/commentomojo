@@ -16,12 +16,11 @@ describe('GET /comments', () => {
   async function fetchAndExpectRightComments(agent, postCommentsfixtures,
       parentPostId ,lastCommentId, limit) {
     const query = {
-      parentPostId
     };
     if(lastCommentId) query.lastCommentId = lastCommentId;
     if(limit) query.limit = limit;
     const response = await agent
-      .get('/comments')
+      .get(`/${parentPostId}/comments`)
       .query(query)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(200);
@@ -34,6 +33,9 @@ describe('GET /comments', () => {
     const {userIdToDataMap} = userFixtures;
     expect(fetchedComments.length).toBe(limitedComments.length);
     fetchedComments.forEach((e, index)=>{
+      if (e.upvoted !==undefined) {
+        
+      }
       expect(e.parentPostId).toBe(parentPostId);
       expect(e.commenterId).toBe(limitedComments[index].commenterId);
       expect(e.commenterUsername).toBe(userIdToDataMap[e.commenterId].username);
@@ -88,10 +90,9 @@ describe('GET /comments', () => {
     let limit = 3;
     let lastCommentId = 1;
     let response =  await agent
-      .get('/comments')
+      .get(`/${parentPostId}/comments`)
       .query({lastCommentId})
       .query({limit})
-      .query({parentPostId})
       .set('Accept', 'application/json');
     expect(response.status).toEqual(404);
     expect(response.body.message).toBe("Comment Not Found.");
@@ -104,10 +105,9 @@ describe('GET /comments', () => {
     let limit = 3;
     let lastCommentId = 10001;
     let response =  await agent
-      .get('/comments')
+      .get(`/${parentPostId}/comments`)
       .query({lastCommentId})
       .query({limit})
-      .query({parentPostId})
       .set('Accept', 'application/json');
     expect(response.status).toEqual(404);
     expect(response.body.message).toBe("Comment Not Found.");

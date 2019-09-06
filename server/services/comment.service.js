@@ -45,6 +45,39 @@ exports.getComments = async (postId, lastCommentId, limit) =>{
   }
 };
 
+exports.getActiveVotesComments = async (parentPostId, voterId, lastCommentId, limit) =>{
+  try {
+    lastCommentId = lastCommentId || 0;
+    limit = limit || 10;
+    const votes = await Vote.getActiveVotes(parentPostId, voterId, lastCommentId, limit);
+    return votes;
+  }
+  catch (err) {
+    console.error(err);
+    throw new AppError();
+  }
+};
+
+exports.mergeCurrentUserCommentsVoteInfo = (sortedVotes, sortedComments) => {
+  try {
+    let voteIndex = 0;
+    return sortedComments.map((c)=>{
+      if(voteIndex>=sortedVotes.length) return c;
+      if (sortedVotes[voteIndex].parentCommentId === c.id) {
+        c.upvoted = sortedVotes[voteIndex].upvote?true:false;
+        c.downvoted = !c.upvoted;
+        voteIndex++;
+        return c;
+      }
+      return c;
+    })
+  }
+  catch (err) {
+    console.error(err);
+    throw new AppError();
+  }
+}
+
 exports.insertComment = async (postId, commenterId, text) => {
   try {
     const comment = await Comment.insertCommentOnPost(postId, commenterId, text);
@@ -57,7 +90,7 @@ exports.insertComment = async (postId, commenterId, text) => {
   }
 };
 
-exports.upvote = async (parentCommentId, voterId) => {
+exports.upvote = async (parentPostId, parentCommentId, voterId) => {
   let comment;
   try {
     comment = await Comment.fetchComment(parentCommentId);
@@ -68,8 +101,10 @@ exports.upvote = async (parentCommentId, voterId) => {
   if (comment.commenterId == voterId) throw new SelfVoteError();
   const trx = await transaction.start(Vote.knex());
   try{
-    const insertQuery = await Vote.insertUpvote(parentCommentId, voterId, trx);
+    const insertQuery = await Vote.insertUpvote(parentPostId, parentCommentId, voterId, trx);
     const updatedComment = await Comment.incrementUpvotes(parentCommentId, trx);
+    updatedComment.upvoted = true;
+    updatedComment.downvoted = false;
     await trx.commit();
     return updatedComment;
   } catch(err) {
@@ -78,7 +113,7 @@ exports.upvote = async (parentCommentId, voterId) => {
   }
 };
 
-exports.downvote = async (parentCommentId, voterId) => {
+exports.downvote = async (parentPostId, parentCommentId, voterId) => {
   let comment;
   try {
     comment = await Comment.fetchComment(parentCommentId);
@@ -90,8 +125,10 @@ exports.downvote = async (parentCommentId, voterId) => {
   if (comment.commenterId == voterId) throw new SelfVoteError();
   const trx = await transaction.start(Vote.knex());
   try {
-    const insertQuery = await Vote.insertDownvote(parentCommentId, voterId, trx);
+    const insertQuery = await Vote.insertDownvote(parentPostId, parentCommentId, voterId, trx);
     const updatedComment = await Comment.incrementDownvotes(parentCommentId, trx);
+    updatedComment.upvoted = false;
+    updatedComment.downvoted = true;
     await trx.commit();
     return updatedComment;
   } catch(err) {
