@@ -15,7 +15,7 @@ afterAll(async ()=>{
 
 async function fetchAllCommentsOfPostId(parentPostId,agent) {
   response = await agent
-    .get(`/${parentPostId}/comments`)
+    .get(`/api/${parentPostId}/comments`)
     .query({
       lastCommentId: 0, // fetch all postId 1 comments
         limit: 10000 // estimately set to more than num of postId1 comments
@@ -36,7 +36,7 @@ describe('POST /comments', () => {
     };
     const agent = request.agent(app);
     let response = await agent
-      .post('/user/login')
+      .post('/api/user/login')
       .send(data)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(200);
@@ -53,7 +53,7 @@ describe('POST /comments', () => {
       }
     };
     response =  await agent
-      .post(`/${data.comment.parentPostId}/comments`)
+      .post(`/api/${data.comment.parentPostId}/comments`)
       .send(data)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(200);
@@ -80,7 +80,7 @@ describe('POST /comments', () => {
     };
     const fetchedCommentsBeforeTry = await fetchAllCommentsOfPostId(1, agent);
     response = await agent
-      .post(`/${data.comment.parentPostId}/comments`)
+      .post(`/api/${data.comment.parentPostId}/comments`)
       .send(data)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(401);
@@ -100,7 +100,7 @@ describe('POST /comments', () => {
 
     const agent = request.agent(app);
     let response = await agent
-      .post('/user/login')
+      .post('/api/user/login')
       .send(data)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(200);
@@ -115,7 +115,7 @@ describe('POST /comments', () => {
       }
     };
     response = await agent
-      .post(`/${data.comment.parentPostId}/comments`)
+      .post(`/api/${data.comment.parentPostId}/comments`)
       .send(data)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(400);
@@ -125,7 +125,7 @@ describe('POST /comments', () => {
       }
     };
     response = await agent
-      .post(`/${data.comment.parentPostId}/comments`)
+      .post(`/api/${data.comment.parentPostId}/comments`)
       .send(data)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(400);
@@ -136,7 +136,7 @@ describe('POST /comments', () => {
       }
     };
     response = await agent
-      .post(`/${data.comment.parentPostId}/comments`)
+      .post(`/api/${data.comment.parentPostId}/comments`)
       .send(data)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(400);

@@ -12,7 +12,7 @@ afterAll(async ()=>{
   await knex.seed.run();
 });
 
-describe('POST /user/login', () => {
+describe('POST /api/user/login', () => {
   it('respond with 200 logged in', async () => {
     const userData = userFixtures.rawData.testUser1;
     let data = {
@@ -21,7 +21,7 @@ describe('POST /user/login', () => {
     };
     const agent = request.agent(app);
     const response =  await agent
-      .post('/user/login')
+      .post('/api/user/login')
       .send(data)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(200);
@@ -38,7 +38,7 @@ describe('POST /user/login', () => {
     };
     const agent = request.agent(app);
     const response =  await agent
-      .post('/user/login')
+      .post('/api/user/login')
       .send(data)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(401);
@@ -51,7 +51,7 @@ describe('POST /user/login', () => {
     };
     const agent = request.agent(app);
     let response =  await agent
-      .post('/user/login')
+      .post('/api/user/login')
       .send(data)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(400);
@@ -61,7 +61,7 @@ describe('POST /user/login', () => {
       username: userData.username,
     };
     response =  await agent
-      .post('/user/login')
+      .post('/api/user/login')
       .send(data)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(400);
@@ -72,7 +72,7 @@ describe('POST /user/login', () => {
       missplet: "password"
     };
     response =  await agent
-      .post('/user/login')
+      .post('/api/user/login')
       .send(data)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(400);

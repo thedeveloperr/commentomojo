@@ -11,7 +11,7 @@ afterAll(async ()=>{
   await knex.seed.run();
 });
 
-describe('POST /user/signup', () => {
+describe('POST /api/user/signup', () => {
   it('respond with 200 created', async () => {
     const userData = userFixtures.rawData.testUser5;
     let data = {
@@ -21,7 +21,7 @@ describe('POST /user/signup', () => {
       }
     };
     const response =  await request(app)
-      .post('/user/signup')
+      .post('/api/user/signup')
       .send(data)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(200);
@@ -39,7 +39,7 @@ describe('POST /user/signup', () => {
       }
     };
     let response =  await request(app)
-      .post('/user/signup')
+      .post('/api/user/signup')
       .send(data)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(409);
@@ -57,7 +57,7 @@ describe('POST /user/signup', () => {
       }
     };
     let response =  await request(app)
-      .post('/user/signup')
+      .post('/api/user/signup')
       .send(data)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(400);
@@ -70,7 +70,7 @@ describe('POST /user/signup', () => {
       }
     };
     response =  await request(app)
-      .post('/user/signup')
+      .post('/api/user/signup')
       .send(data)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(400);
@@ -83,7 +83,7 @@ describe('POST /user/signup', () => {
       }
     };
     response =  await request(app)
-      .post('/user/signup')
+      .post('/api/user/signup')
       .send(data)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(400);
@@ -96,7 +96,7 @@ describe('POST /user/signup', () => {
       }
     };
     response =  await request(app)
-      .post('/user/signup')
+      .post('/api/user/signup')
       .send(data)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(400);

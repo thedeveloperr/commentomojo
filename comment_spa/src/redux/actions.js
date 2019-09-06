@@ -10,6 +10,7 @@ export const SET_NEW_COMMENTS = 'SET_NEW_COMMENTS';
 export const TOGGLE_ERROR_MODAL = 'TOGGLE_ERROR_MODAL';
 export const FETCHING_COMMENTS = 'FETCHING_COMMENTS';
 export const SET_USERNAME = 'SET_USERNAME';
+const api_prefix = 'api';
 
 export function setUsername(payload) {
   return {
@@ -85,7 +86,7 @@ export function toggleErrorModal(payload) {
 export function postLoginRequestToServer(username, password) {
   return async dispatch => {
     try {
-      const response = await fetch(`/user/login`, {
+      const response = await fetch(`/${api_prefix}/user/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json;charset=UTF-8",
@@ -112,7 +113,7 @@ export function postLoginRequestToServer(username, password) {
 export function logout() {
   return async dispatch => {
     try {
-      const response = await fetch(`/user/session`, {
+      const response = await fetch(`/${api_prefix}/user/session`, {
         method: "DELETE",
         credentials: 'include'
       });
@@ -134,7 +135,7 @@ export function logout() {
 export function postCommentToServer(parentPostId, text) {
   return async dispatch => {
     try {
-      const response = await fetch(`/${parentPostId}/comments/`, {
+      const response = await fetch(`/${api_prefix}/${parentPostId}/comments/`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json;charset=UTF-8",
@@ -164,7 +165,7 @@ export function postCommentToServer(parentPostId, text) {
 export function putUpvoteOnServer(parentPostId, parentCommentId) {
   return async dispatch => {
     try {
-      const response = await fetch(`/${parentPostId}/comments/${parentCommentId}/upvote`, {
+      const response = await fetch(`/${api_prefix}/${parentPostId}/comments/${parentCommentId}/upvote`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json;charset=UTF-8",
@@ -191,7 +192,7 @@ export function putUpvoteOnServer(parentPostId, parentCommentId) {
 export function deleteUpvoteFromServer(parentPostId, parentCommentId) {
   return async dispatch => {
     try {
-      const response = await fetch(`/${parentPostId}/comments/${parentCommentId}/upvote`, {
+      const response = await fetch(`/${api_prefix}/${parentPostId}/comments/${parentCommentId}/upvote`, {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json;charset=UTF-8",
@@ -218,7 +219,7 @@ export function deleteUpvoteFromServer(parentPostId, parentCommentId) {
 export function putDownvoteOnServer(parentPostId, parentCommentId) {
   return async dispatch => {
     try {
-      const response = await fetch(`/${parentPostId}/comments/${parentCommentId}/downvote`, {
+      const response = await fetch(`/${api_prefix}/${parentPostId}/comments/${parentCommentId}/downvote`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json;charset=UTF-8",
@@ -245,7 +246,7 @@ export function putDownvoteOnServer(parentPostId, parentCommentId) {
 export function deleteDownvoteFromServer(parentPostId, parentCommentId) {
   return async dispatch => {
     try {
-      const response = await fetch(`/${parentPostId}/comments/${parentCommentId}/downvote`, {
+      const response = await fetch(`/${api_prefix}/${parentPostId}/comments/${parentCommentId}/downvote`, {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json;charset=UTF-8",
@@ -268,7 +269,7 @@ export function deleteDownvoteFromServer(parentPostId, parentCommentId) {
 
 export function fetchComments(parentPostId, lastCommentId, limit) {
   return async dispatch => {
-    let requestUrl = `/${parentPostId}/comments/`;
+    let requestUrl = `/${api_prefix}/${parentPostId}/comments/`;
     if (lastCommentId) requestUrl += `?lastComment=${lastCommentId}`;
     if (limit) requestUrl += `&limit=${limit}`;
     try {

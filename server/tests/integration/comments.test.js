@@ -20,7 +20,7 @@ describe('GET /comments', () => {
     if(lastCommentId) query.lastCommentId = lastCommentId;
     if(limit) query.limit = limit;
     const response = await agent
-      .get(`/${parentPostId}/comments`)
+      .get(`/api/${parentPostId}/comments`)
       .query(query)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(200);
@@ -33,9 +33,6 @@ describe('GET /comments', () => {
     const {userIdToDataMap} = userFixtures;
     expect(fetchedComments.length).toBe(limitedComments.length);
     fetchedComments.forEach((e, index)=>{
-      if (e.upvoted !==undefined) {
-        
-      }
       expect(e.parentPostId).toBe(parentPostId);
       expect(e.commenterId).toBe(limitedComments[index].commenterId);
       expect(e.commenterUsername).toBe(userIdToDataMap[e.commenterId].username);
@@ -54,7 +51,7 @@ describe('GET /comments', () => {
     };
     const agent = request.agent(app);
     let response =  await agent
-      .post('/user/login')
+      .post('/api/user/login')
       .send(data)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(200);
@@ -90,7 +87,7 @@ describe('GET /comments', () => {
     let limit = 3;
     let lastCommentId = 1;
     let response =  await agent
-      .get(`/${parentPostId}/comments`)
+      .get(`/api/${parentPostId}/comments`)
       .query({lastCommentId})
       .query({limit})
       .set('Accept', 'application/json');
@@ -105,7 +102,7 @@ describe('GET /comments', () => {
     let limit = 3;
     let lastCommentId = 10001;
     let response =  await agent
-      .get(`/${parentPostId}/comments`)
+      .get(`/api/${parentPostId}/comments`)
       .query({lastCommentId})
       .query({limit})
       .set('Accept', 'application/json');

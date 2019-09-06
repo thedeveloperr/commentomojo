@@ -11,7 +11,7 @@ afterAll(async ()=>{
   await knex.seed.run();
 });
 
-describe('POST /user/signup and POST /user/login', () => {
+describe('POST /api/user/signup and POST /api/user/login', () => {
   it('signup and login with same user successfully', async () => {
     const userData = userFixtures.rawData.testUser5;
     const data = {
@@ -21,7 +21,7 @@ describe('POST /user/signup and POST /user/login', () => {
       }
     };
     let response =  await request(app)
-      .post('/user/signup')
+      .post('/api/user/signup')
       .send(data)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(200);
@@ -31,7 +31,7 @@ describe('POST /user/signup and POST /user/login', () => {
     expect(response.body.data.user.username).toBe(userData.username);
     const agent = request.agent(app);
     response =  await agent
-      .post('/user/login')
+      .post('/api/user/login')
       .send(data.user)
       .set('Accept', 'application/json');
     expect(response.status).toEqual(200);

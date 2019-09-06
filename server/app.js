@@ -24,6 +24,6 @@ app.use(session({
 }));
 app.use(Auth.init);
 app.use(Auth.session);
-app.use('/user', UserRoutes);
-app.use(CommentRoutes);
+app.use('/api', UserRoutes);
+app.use('/api', CommentRoutes);
 module.exports = app;

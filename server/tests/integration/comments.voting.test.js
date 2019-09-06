@@ -18,7 +18,7 @@ async function loginAndExpectSuccess(agent, username, password) {
     password
   };
   const response = await agent
-    .post('/user/login')
+    .post('/api/user/login')
     .send(data)
     .set('Accept', 'application/json');
   expect(response.status).toEqual(200);
@@ -29,7 +29,7 @@ async function loginAndExpectSuccess(agent, username, password) {
 
 async function fetchAllCommentsOfPostId(parentPostId,agent) {
   response = await agent
-    .get(`/${parentPostId}/comments`)
+    .get(`/api/${parentPostId}/comments`)
     .query({
       lastCommentId: 0, // fetch all postId 1 comments
         limit: 10000 // estimately set to more than num of postId1 comments
@@ -44,7 +44,7 @@ describe('PUT :parentPostId/comments/:parentCommentId/upvote', ()=>{
   it('must not upvote when not logged in', async()=>{
     const agent = request.agent(app);
     const response = await agent
-      .put('/1/comments/1/upvote')
+      .put('/api/1/comments/1/upvote')
       .set('Accept', 'application/json');
     expect(response.status).toEqual(401);
     expect(response.body.message).toBe("Login/Register to continue.");
@@ -53,7 +53,7 @@ describe('PUT :parentPostId/comments/:parentCommentId/upvote', ()=>{
     const agent = request.agent(app);
     const initialComments = await fetchAllCommentsOfPostId(1,agent);
     const response = await agent
-      .put('/1/comments/1/upvote')
+      .put('/api/1/comments/1/upvote')
       .set('Accept', 'application/json');
     expect(response.status).toEqual(401);
     expect(response.body.message).toBe("Login/Register to continue.");
@@ -68,7 +68,7 @@ describe('PUT :parentPostId/comments/:parentCommentId/upvote', ()=>{
     await loginAndExpectSuccess(agent, userData.username, userData.password);
     const initialComments = await fetchAllCommentsOfPostId(1,agent);
     const response = await agent
-      .put(`/1/comments/${fixtureCommentToUpvote.id}/upvote`)
+      .put(`/api/1/comments/${fixtureCommentToUpvote.id}/upvote`)
       .set('Accept', 'application/json');
     expect(response.status).toBe(409);
     const afterUpvoteAttempt = await fetchAllCommentsOfPostId(1, agent);
@@ -83,7 +83,7 @@ describe('PUT :parentPostId/comments/:parentCommentId/upvote', ()=>{
     await loginAndExpectSuccess(agent, userData.username, userData.password);
     const initialComments = await fetchAllCommentsOfPostId(1,agent);
     const response = await agent
-      .put(`/1/comments/${fixtureCommentToUpvote.id}/upvote`)
+      .put(`/api/1/comments/${fixtureCommentToUpvote.id}/upvote`)
       .set('Accept', 'application/json');
     expect(response.status).toBe(200);
     expect(response.body.data.comment.id).toBe(fixtureCommentToUpvote.id);
@@ -108,7 +108,7 @@ describe('PUT :parentPostId/comments/:parentCommentId/upvote', ()=>{
     await loginAndExpectSuccess(agent, userData.username, userData.password);
     const initialComments = await fetchAllCommentsOfPostId(1,agent);
     const response = await agent
-      .put(`/1/comments/${fixtureCommentToUpvote.id}/upvote`)
+      .put(`/api/1/comments/${fixtureCommentToUpvote.id}/upvote`)
       .set('Accept', 'application/json');
     expect(response.status).toBe(409);
     expect(response.body.message).toBe("Already Voted Cannot vote twice on same comment.");
@@ -123,7 +123,7 @@ describe('PUT :parentPostId/comments/:parentCommentId/upvote', ()=>{
     await loginAndExpectSuccess(agent, userData.username, userData.password);
     const initialComments = await fetchAllCommentsOfPostId(2,agent);
     const response = await agent
-      .put(`/2/comments/${fixtureCommentToUpvote.id}/upvote`)
+      .put(`/api/2/comments/${fixtureCommentToUpvote.id}/upvote`)
       .set('Accept', 'application/json');
     expect(response.status).toBe(200);
     expect(response.body.data.comment.id).toBe(fixtureCommentToUpvote.id);
@@ -146,7 +146,7 @@ describe('PUT :parentPostId/comments/:parentCommentId/upvote', ()=>{
     const userData = userFixtures.rawData.testUser1;
     await loginAndExpectSuccess(agent, userData.username, userData.password);
     const response = await agent
-      .put(`/2/comments/10001/upvote`)
+      .put(`/api/2/comments/10001/upvote`)
       .set('Accept', 'application/json');
     expect(response.status).toBe(404);
     expect(response.body.message).toBe("Comment Not Found.");
@@ -156,7 +156,7 @@ describe('PUT :parentPostId/comments/:parentCommentId/upvote', ()=>{
     const userData = userFixtures.rawData.testUser1;
     await loginAndExpectSuccess(agent, userData.username, userData.password);
     const response = await agent
-      .put(`/2/comments/gdfggg/upvote`)
+      .put(`/api/2/comments/gdfggg/upvote`)
       .set('Accept', 'application/json');
     expect(response.status).toBe(400);
     expect(response.body.message).toBe("parentCommentId param is not a number but expected to be.");
@@ -168,7 +168,7 @@ describe('DELETE :parentPostId/comments/:parentCommentId/upvote', ()=>{
   it('must not delete upvote when not logged in', async()=>{
     const agent = request.agent(app);
     const response = await agent
-      .delete('/1/comments/1/upvote')
+      .delete('/api/1/comments/1/upvote')
       .set('Accept', 'application/json');
     expect(response.status).toEqual(401);
     expect(response.body.message).toBe("Login/Register to continue.");
@@ -177,7 +177,7 @@ describe('DELETE :parentPostId/comments/:parentCommentId/upvote', ()=>{
     const agent = request.agent(app);
     const initialComments = await fetchAllCommentsOfPostId(1,agent);
     const response = await agent
-      .delete('/1/comments/1/upvote')
+      .delete('/api/1/comments/1/upvote')
       .set('Accept', 'application/json');
     expect(response.status).toEqual(401);
     expect(response.body.message).toBe("Login/Register to continue.");
@@ -192,7 +192,7 @@ describe('DELETE :parentPostId/comments/:parentCommentId/upvote', ()=>{
     await loginAndExpectSuccess(agent, userData.username, userData.password);
     const initialComments = await fetchAllCommentsOfPostId(1,agent);
     const response = await agent
-      .delete(`/1/comments/${fixtureCommentToUpvote.id}/upvote`)
+      .delete(`/api/1/comments/${fixtureCommentToUpvote.id}/upvote`)
       .set('Accept', 'application/json');
     expect(response.status).toBe(404);
     expect(response.body.message).toBe("Not Found. Invalid Vote.");
@@ -207,7 +207,7 @@ describe('DELETE :parentPostId/comments/:parentCommentId/upvote', ()=>{
     await loginAndExpectSuccess(agent, userData.username, userData.password);
     const initialComments = await fetchAllCommentsOfPostId(2,agent);
     const response = await agent
-      .delete(`/2/comments/${fixtureCommentToUpvote.id}/upvote`)
+      .delete(`/api/2/comments/${fixtureCommentToUpvote.id}/upvote`)
       .set('Accept', 'application/json');
     expect(response.status).toBe(404);
     expect(response.body.message).toBe("Not Found. Invalid Vote.");
@@ -224,7 +224,7 @@ describe('DELETE :parentPostId/comments/:parentCommentId/upvote', ()=>{
     const userData = userFixtures.rawData.testUser4;
     await loginAndExpectSuccess(agent, userData.username, userData.password);
     const response = await agent
-      .delete(`/1/comments/${fixtureCommentToUpvote.id}/upvote`)
+      .delete(`/api/1/comments/${fixtureCommentToUpvote.id}/upvote`)
       .set('Accept', 'application/json');
     expect(response.status).toBe(200);
     expect(response.body.data.comment.id).toBe(fixtureCommentToUpvote.id);
@@ -246,12 +246,12 @@ describe('DELETE :parentPostId/comments/:parentCommentId/upvote', ()=>{
     const userData = userFixtures.rawData.testUser4;
     await loginAndExpectSuccess(agent, userData.username, userData.password);
     let response = await agent
-      .delete(`/1/comments/${fixtureCommentToUpvote.id}/upvote`)
+      .delete(`/api/1/comments/${fixtureCommentToUpvote.id}/upvote`)
       .set('Accept', 'application/json');
     expect(response.status).toBe(200);
     const initialComments = await fetchAllCommentsOfPostId(1,agent);
     response = await agent
-      .delete(`/1/comments/${fixtureCommentToUpvote.id}/upvote`)
+      .delete(`/api/1/comments/${fixtureCommentToUpvote.id}/upvote`)
       .set('Accept', 'application/json');
     expect(response.status).toBe(404);
     expect(response.body.message).toBe("Not Found. Invalid Vote.");
@@ -265,7 +265,7 @@ describe('DELETE :parentPostId/comments/:parentCommentId/upvote', ()=>{
     const userData = userFixtures.rawData.testUser1;
     await loginAndExpectSuccess(agent, userData.username, userData.password);
     const response = await agent
-      .delete(`/2/comments/10001/upvote`)
+      .delete(`/api/2/comments/10001/upvote`)
       .set('Accept', 'application/json');
     expect(response.status).toBe(404);
     expect(response.body.message).toBe("Comment Not Found.");
@@ -276,7 +276,7 @@ describe('DELETE :parentPostId/comments/:parentCommentId/upvote', ()=>{
     const userData = userFixtures.rawData.testUser1;
     await loginAndExpectSuccess(agent, userData.username, userData.password);
     const response = await agent
-      .delete(`/2/comments/gdfggg/upvote`)
+      .delete(`/api/2/comments/gdfggg/upvote`)
       .set('Accept', 'application/json');
     expect(response.status).toBe(400);
     expect(response.body.message).toBe("parentCommentId param is not a number but expected to be.");
@@ -287,7 +287,7 @@ describe('PUT :parentPostId/comments/:parentCommentId/downvote', ()=>{
   it('must not downvote when not logged in', async()=>{
     const agent = request.agent(app);
     const response = await agent
-      .put('/1/comments/1/downvote')
+      .put('/api/1/comments/1/downvote')
       .set('Accept', 'application/json');
     expect(response.status).toEqual(401);
     expect(response.body.message).toBe("Login/Register to continue.");
@@ -296,7 +296,7 @@ describe('PUT :parentPostId/comments/:parentCommentId/downvote', ()=>{
     const agent = request.agent(app);
     const initialComments = await fetchAllCommentsOfPostId(1,agent);
     const response = await agent
-      .put('/1/comments/1/downvote')
+      .put('/api/1/comments/1/downvote')
       .set('Accept', 'application/json');
     expect(response.status).toEqual(401);
     expect(response.body.message).toBe("Login/Register to continue.");
@@ -311,7 +311,7 @@ describe('PUT :parentPostId/comments/:parentCommentId/downvote', ()=>{
     await loginAndExpectSuccess(agent, userData.username, userData.password);
     const initialComments = await fetchAllCommentsOfPostId(1,agent);
     const response = await agent
-      .put(`/1/comments/${fixtureCommentToDownvote.id}/downvote`)
+      .put(`/api/1/comments/${fixtureCommentToDownvote.id}/downvote`)
       .set('Accept', 'application/json');
     expect(response.status).toBe(409);
     const afterDownvoteAttempt = await fetchAllCommentsOfPostId(1, agent);
@@ -326,7 +326,7 @@ describe('PUT :parentPostId/comments/:parentCommentId/downvote', ()=>{
     await loginAndExpectSuccess(agent, userData.username, userData.password);
     const initialComments = await fetchAllCommentsOfPostId(1,agent);
     const response = await agent
-      .put(`/1/comments/${fixtureCommentToDownvote.id}/downvote`)
+      .put(`/api/1/comments/${fixtureCommentToDownvote.id}/downvote`)
       .set('Accept', 'application/json');
     expect(response.status).toBe(200);
     expect(response.body.data.comment.id).toBe(fixtureCommentToDownvote.id);
@@ -351,7 +351,7 @@ describe('PUT :parentPostId/comments/:parentCommentId/downvote', ()=>{
     await loginAndExpectSuccess(agent, userData.username, userData.password);
     const initialComments = await fetchAllCommentsOfPostId(1,agent);
     const response = await agent
-      .put(`/1/comments/${fixtureCommentToDownvote.id}/downvote`)
+      .put(`/api/1/comments/${fixtureCommentToDownvote.id}/downvote`)
       .set('Accept', 'application/json');
     expect(response.status).toBe(409);
     expect(response.body.message).toBe("Already Voted Cannot vote twice on same comment.");
@@ -366,7 +366,7 @@ describe('PUT :parentPostId/comments/:parentCommentId/downvote', ()=>{
     await loginAndExpectSuccess(agent, userData.username, userData.password);
     const initialComments = await fetchAllCommentsOfPostId(2,agent);
     const response = await agent
-      .put(`/2/comments/${fixtureCommentToDownvote.id}/downvote`)
+      .put(`/api/2/comments/${fixtureCommentToDownvote.id}/downvote`)
       .set('Accept', 'application/json');
     expect(response.status).toBe(200);
     expect(response.body.data.comment.id).toBe(fixtureCommentToDownvote.id);
@@ -390,7 +390,7 @@ describe('PUT :parentPostId/comments/:parentCommentId/downvote', ()=>{
     const userData = userFixtures.rawData.testUser1;
     await loginAndExpectSuccess(agent, userData.username, userData.password);
     const response = await agent
-      .put(`/2/comments/10001/downvote`)
+      .put(`/api/2/comments/10001/downvote`)
       .set('Accept', 'application/json');
     expect(response.status).toBe(404);
     expect(response.body.message).toBe("Comment Not Found.");
@@ -401,7 +401,7 @@ describe('PUT :parentPostId/comments/:parentCommentId/downvote', ()=>{
     const userData = userFixtures.rawData.testUser1;
     await loginAndExpectSuccess(agent, userData.username, userData.password);
     const response = await agent
-      .put(`/2/comments/gdfggg/downvote`)
+      .put(`/api/2/comments/gdfggg/downvote`)
       .set('Accept', 'application/json');
     expect(response.status).toBe(400);
     expect(response.body.message).toBe("parentCommentId param is not a number but expected to be.");
@@ -413,7 +413,7 @@ describe('DELETE :parentPostId/comments/:parentCommentId/downvote', ()=>{
   it('must not delete downvote when not logged in', async()=>{
     const agent = request.agent(app);
     const response = await agent
-      .delete('/1/comments/1/downvote')
+      .delete('/api/1/comments/1/downvote')
       .set('Accept', 'application/json');
     expect(response.status).toEqual(401);
     expect(response.body.message).toBe("Login/Register to continue.");
@@ -422,7 +422,7 @@ describe('DELETE :parentPostId/comments/:parentCommentId/downvote', ()=>{
     const agent = request.agent(app);
     const initialComments = await fetchAllCommentsOfPostId(1,agent);
     const response = await agent
-      .delete('/1/comments/1/downvote')
+      .delete('/api/1/comments/1/downvote')
       .set('Accept', 'application/json');
     expect(response.status).toEqual(401);
     expect(response.body.message).toBe("Login/Register to continue.");
@@ -437,7 +437,7 @@ describe('DELETE :parentPostId/comments/:parentCommentId/downvote', ()=>{
     await loginAndExpectSuccess(agent, userData.username, userData.password);
     const initialComments = await fetchAllCommentsOfPostId(1,agent);
     const response = await agent
-      .delete(`/1/comments/${fixtureCommentToDownvote.id}/downvote`)
+      .delete(`/api/1/comments/${fixtureCommentToDownvote.id}/downvote`)
       .set('Accept', 'application/json');
     expect(response.status).toBe(404);
     expect(response.body.message).toBe("Not Found. Invalid Vote.");
@@ -452,7 +452,7 @@ describe('DELETE :parentPostId/comments/:parentCommentId/downvote', ()=>{
     await loginAndExpectSuccess(agent, userData.username, userData.password);
     const initialComments = await fetchAllCommentsOfPostId(2,agent);
     const response = await agent
-      .delete(`/2/comments/${fixtureCommentToDownvote.id}/downvote`)
+      .delete(`/api/2/comments/${fixtureCommentToDownvote.id}/downvote`)
       .set('Accept', 'application/json');
     expect(response.status).toBe(404);
     expect(response.body.message).toBe("Not Found. Invalid Vote.");
@@ -469,7 +469,7 @@ describe('DELETE :parentPostId/comments/:parentCommentId/downvote', ()=>{
     await loginAndExpectSuccess(agent, userData.username, userData.password);
     const initialComments = await fetchAllCommentsOfPostId(1,agent);
     const response = await agent
-      .delete(`/1/comments/${fixtureCommentToDownvote.id}/downvote`)
+      .delete(`/api/1/comments/${fixtureCommentToDownvote.id}/downvote`)
       .set('Accept', 'application/json');
     expect(response.status).toBe(200);
     expect(response.body.data.comment.id).toBe(fixtureCommentToDownvote.id);
@@ -498,12 +498,12 @@ describe('DELETE :parentPostId/comments/:parentCommentId/downvote', ()=>{
     const userData = userFixtures.rawData.testUser4;
     await loginAndExpectSuccess(agent, userData.username, userData.password);
     let response = await agent
-      .delete(`/1/comments/${fixtureCommentToDownvote.id}/downvote`)
+      .delete(`/api/1/comments/${fixtureCommentToDownvote.id}/downvote`)
       .set('Accept', 'application/json');
     expect(response.status).toBe(200);
     const initialComments = await fetchAllCommentsOfPostId(1,agent);
     response = await agent
-      .delete(`/1/comments/${fixtureCommentToDownvote.id}/downvote`)
+      .delete(`/api/1/comments/${fixtureCommentToDownvote.id}/downvote`)
       .set('Accept', 'application/json');
     expect(response.status).toBe(404);
     expect(response.body.message).toBe("Not Found. Invalid Vote.");
@@ -517,7 +517,7 @@ describe('DELETE :parentPostId/comments/:parentCommentId/downvote', ()=>{
     await loginAndExpectSuccess(agent, userData.username, userData.password);
     const initialComments = await fetchAllCommentsOfPostId(2,agent);
     const response = await agent
-      .delete(`/2/comments/10001/downvote`)
+      .delete(`/api/2/comments/10001/downvote`)
       .set('Accept', 'application/json');
     expect(response.status).toBe(404);
     expect(response.body.message).toBe("Comment Not Found.");
@@ -528,7 +528,7 @@ describe('DELETE :parentPostId/comments/:parentCommentId/downvote', ()=>{
     await loginAndExpectSuccess(agent, userData.username, userData.password);
     const initialComments = await fetchAllCommentsOfPostId(2,agent);
     const response = await agent
-      .delete(`/2/comments/gdfggg/downvote`)
+      .delete(`/api/2/comments/gdfggg/downvote`)
       .set('Accept', 'application/json');
     expect(response.status).toBe(400);
     expect(response.body.message).toBe("parentCommentId param is not a number but expected to be.");
