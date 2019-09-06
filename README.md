@@ -1,3 +1,6 @@
+### Live deployed:
+* https://commentomojo.ml
+  
 ### Features
 * Login: Secured hashed passowrd in db using bcrypt
 * See comments without login
