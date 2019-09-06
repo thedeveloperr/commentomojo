@@ -2,6 +2,7 @@
   "name": "comment_spa",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:4000/",
   "dependencies": {
     "cross-fetch": "^3.0.4",
     "react": "^16.9.0",
@@ -35,6 +36,7 @@
     ]
   },
   "devDependencies": {
-    "redux-devtools": "^3.5.0"
+    "redux-devtools": "^3.5.0",
+    "redux-devtools-extension": "^2.13.8"
   }
 }
