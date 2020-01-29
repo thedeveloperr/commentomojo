@@ -1,5 +1,5 @@
 ### Live deployed:
-* https://commentomojo.ml
+* ~~https://commentomojo.ml~~
   
 ### Features
 * Login: Secured hashed passowrd in db using bcrypt
